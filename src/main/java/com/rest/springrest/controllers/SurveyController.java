@@ -6,11 +6,12 @@ import com.rest.springrest.services.QuestionService;
 import com.rest.springrest.services.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class SurveyController {
     }
 
     @RequestMapping("surveys/{id}")
-    public Survey getSurveyById(@PathVariable int id) {
+    public Survey getSurveyById(@PathVariable String id) {
         Survey survey = surveyService.getSurveyById(id);
         if (survey == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -36,7 +37,7 @@ public class SurveyController {
     }
 
     @RequestMapping("surveys/{id}/questions")
-    public List<Question> getQuestionsBySurveyById(@PathVariable int id) {
+    public List<Question> getQuestionsBySurveyById(@PathVariable String id) {
         List<Question> questions = questionService.getQuestionsInSurveyById(id);
         if (questions == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -44,8 +45,8 @@ public class SurveyController {
         return questions;
     }
 
-    @RequestMapping("surveys/{surveyId}/questions/{questionId}")
-    public Question getQuestionFromSurveyById(@PathVariable int surveyId, @PathVariable int questionId) {
+    @RequestMapping(value="surveys/{surveyId}/questions/{questionId}", method = RequestMethod.GET)
+    public Question getQuestionFromSurveyById(@PathVariable String surveyId, @PathVariable String questionId) {
         Survey survey = surveyService.getSurveyById(surveyId);
         List<Question> questions;
         Question question;
@@ -67,5 +68,13 @@ public class SurveyController {
         }
 
         return question;
+    }
+
+    @RequestMapping(value="surveys/{surveyId}/questions", method = RequestMethod.POST)
+    public ResponseEntity<Object> addQuestionToSurvey(@PathVariable String surveyId, @RequestBody Question question) {
+        String questionId = questionService.addQuestionToSurvey(surveyId, question);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{questionId}").buildAndExpand(questionId).toUri();
+        return ResponseEntity.created(location).build();
     }
 }

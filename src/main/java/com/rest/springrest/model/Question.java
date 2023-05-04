@@ -3,25 +3,25 @@ package com.rest.springrest.model;
 import java.util.List;
 
 public class Question {
-    private int id;
+    private String id;
     private String description;
     private List<String> options;
     private String correctAnswer;
 
     public Question() {}
 
-    public Question(int id, String description, List<String> options, String correctAnswer) {
+    public Question(String id, String description, List<String> options, String correctAnswer) {
         this.id = id;
         this.description = description;
         this.options = options;
         this.correctAnswer = correctAnswer;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
