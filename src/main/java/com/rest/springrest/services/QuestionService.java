@@ -40,4 +40,17 @@ public class QuestionService {
         questions.add(question);
         return question.getId();
     }
+
+    public String deleteQuestionFromSurvey(String surveyId, String questionId) {
+        Survey survey = surveyService.getSurveyById(surveyId);
+        if (survey == null) {
+            return null;
+        }
+        List<Question> questions = survey.getQuestions();
+
+        Predicate<? super Question> predicate = question -> question.getId().equalsIgnoreCase(questionId);
+        questions.removeIf(predicate);
+
+        return null;
+    }
 }
